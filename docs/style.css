@@ -1,0 +1,46 @@
+html, head, body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: calibri, helvetica, arial, sans-serif;
+}
+
+.container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 10%;
+  margin: auto;
+  height: 20%;
+  text-align: left;
+  transition: ease 4s opacity;
+}
+
+.container[aria-hidden="true"] {
+  opacity: 0;
+}
+
+.head {
+  font-size: 25px;
+}
+
+.main {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.left {
+  font-size: 40px;
+}
+
+.num {
+  font-size: 80px;
+  margin-left: 0.5ch;
+  margin-right: 0.5ch;
+}
+
+.unit {
+  font-size: 40px;
+}
