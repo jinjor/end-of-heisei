@@ -10884,38 +10884,40 @@ var _elm_lang$html$Html_Attributes$classList = function (list) {
 };
 var _elm_lang$html$Html_Attributes$style = _elm_lang$virtual_dom$VirtualDom$style;
 
-var _user$project$Main$formatDelta = function (delta) {
-	return (_elm_lang$core$Native_Utils.cmp(delta.days, 1) > -1) ? {ctor: '_Tuple2', _0: delta.days, _1: '日'} : ((_elm_lang$core$Native_Utils.cmp(delta.hours, 1) > -1) ? {ctor: '_Tuple2', _0: delta.hours, _1: '時間'} : ((_elm_lang$core$Native_Utils.cmp(delta.minutes, 1) > -1) ? {ctor: '_Tuple2', _0: delta.minutes, _1: '日'} : {
-		ctor: '_Tuple2',
-		_0: A2(_elm_lang$core$Basics$max, delta.seconds, 0),
-		_1: '秒'
-	}));
+var _user$project$Main$subscriptions = function (_p0) {
+	return A2(_elm_lang$core$Time$every, 20 * _elm_lang$core$Time$millisecond, _elm_lang$core$Basics$identity);
 };
+var _user$project$Main$formatDelta = F2(
+	function (from, to) {
+		var _p1 = A2(_elm_community$elm_time$Time_DateTime$compare, from, to);
+		if (_p1.ctor === 'GT') {
+			return {ctor: '_Tuple2', _0: 0, _1: '秒'};
+		} else {
+			var delta = A2(_elm_community$elm_time$Time_DateTime$delta, to, from);
+			return (_elm_lang$core$Native_Utils.cmp(delta.days, 1) > -1) ? {ctor: '_Tuple2', _0: delta.days + 1, _1: '日'} : ((_elm_lang$core$Native_Utils.cmp(delta.hours, 1) > -1) ? {ctor: '_Tuple2', _0: delta.hours + 1, _1: '時間'} : ((_elm_lang$core$Native_Utils.cmp(delta.minutes, 1) > -1) ? {ctor: '_Tuple2', _0: delta.minutes + 1, _1: '分'} : {ctor: '_Tuple2', _0: delta.seconds + 1, _1: '秒'}));
+		}
+	});
 var _user$project$Main$endOfHeisei = function () {
-	var _p0 = _elm_community$elm_time$Time_DateTime$fromISO8601('2019-04-30T00:00:00+09:00');
-	if (_p0.ctor === 'Ok') {
-		return _p0._0;
+	var _p2 = _elm_community$elm_time$Time_DateTime$fromISO8601('2019-05-01T00:00:00+09:00');
+	if (_p2.ctor === 'Ok') {
+		return _p2._0;
 	} else {
 		return _elm_lang$core$Native_Utils.crashCase(
 			'Main',
 			{
-				start: {line: 49, column: 5},
-				end: {line: 54, column: 41}
+				start: {line: 41, column: 5},
+				end: {line: 46, column: 41}
 			},
-			_p0)('invalid format');
+			_p2)('invalid format');
 	}
 }();
 var _user$project$Main$view = function (model) {
-	var _p2 = model.current;
-	if (_p2.ctor === 'Just') {
-		var currentDateTime = A2(
-			_elm_community$elm_time$Time_DateTime$addMinutes,
-			0 - model.offset,
-			_elm_community$elm_time$Time_DateTime$fromTimestamp(_p2._0));
-		var delta = A2(_elm_community$elm_time$Time_DateTime$delta, _user$project$Main$endOfHeisei, currentDateTime);
-		var _p3 = _user$project$Main$formatDelta(delta);
-		var num = _p3._0;
-		var unit = _p3._1;
+	var _p4 = model;
+	if (_p4.ctor === 'Just') {
+		var currentDateTime = _elm_community$elm_time$Time_DateTime$fromTimestamp(_p4._0);
+		var _p5 = A2(_user$project$Main$formatDelta, currentDateTime, _user$project$Main$endOfHeisei);
+		var num = _p5._0;
+		var unit = _p5._1;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -11012,37 +11014,16 @@ var _user$project$Main$view = function (model) {
 	}
 };
 var _user$project$Main$update = F2(
-	function (_p4, model) {
-		var _p5 = _p4;
+	function (time, model) {
 		return {
 			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{
-					current: _elm_lang$core$Maybe$Just(_p5._0)
-				}),
+			_0: _elm_lang$core$Maybe$Just(time),
 			_1: _elm_lang$core$Platform_Cmd$none
 		};
 	});
-var _user$project$Main$Model = F2(
-	function (a, b) {
-		return {offset: a, current: b};
-	});
-var _user$project$Main$init = function (offset) {
-	return {
-		ctor: '_Tuple2',
-		_0: A2(_user$project$Main$Model, offset, _elm_lang$core$Maybe$Nothing),
-		_1: _elm_lang$core$Platform_Cmd$none
-	};
-};
-var _user$project$Main$Tick = function (a) {
-	return {ctor: 'Tick', _0: a};
-};
-var _user$project$Main$subscriptions = function (_p6) {
-	return A2(_elm_lang$core$Time$every, 20 * _elm_lang$core$Time$millisecond, _user$project$Main$Tick);
-};
-var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
-	{init: _user$project$Main$init, update: _user$project$Main$update, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions})(_elm_lang$core$Json_Decode$int);
+var _user$project$Main$init = {ctor: '_Tuple2', _0: _elm_lang$core$Maybe$Nothing, _1: _elm_lang$core$Platform_Cmd$none};
+var _user$project$Main$main = _elm_lang$html$Html$program(
+	{init: _user$project$Main$init, update: _user$project$Main$update, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions})();
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

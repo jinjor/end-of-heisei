@@ -6,13 +6,9 @@ import Time exposing (Time, every, millisecond)
 import Time.DateTime as DateTime exposing (DateTime, DateTimeDelta)
 
 
-type alias Flags =
-    Int
-
-
-main : Program Flags Model Msg
+main : Program Never Model Msg
 main =
-    programWithFlags
+    program
         { init = init
         , update = update
         , view = view
@@ -21,25 +17,21 @@ main =
 
 
 type alias Model =
-    { offset : Int
-    , current : Maybe Time
-    }
+    Maybe Time
 
 
-type Msg
-    = Tick Time
+type alias Msg =
+    Time
 
 
-init : Flags -> ( Model, Cmd Msg )
-init offset =
-    ( Model offset Nothing, Cmd.none )
+init : ( Model, Cmd Msg )
+init =
+    ( Nothing, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update (Tick time) model =
-    ( { model
-        | current = Just time
-      }
+update time model =
+    ( Just time
     , Cmd.none
     )
 
@@ -56,18 +48,14 @@ endOfHeisei =
 
 view : Model -> Html Msg
 view model =
-    case model.current of
+    case model of
         Just current ->
             let
                 currentDateTime =
                     DateTime.fromTimestamp current
-                        |> DateTime.addMinutes -model.offset
-
-                delta =
-                    DateTime.delta endOfHeisei currentDateTime
 
                 ( num, unit ) =
-                    formatDelta delta
+                    formatDelta currentDateTime endOfHeisei
             in
             div
                 [ class "container" ]
@@ -81,22 +69,33 @@ view model =
 
         Nothing ->
             div
-                [ class "container", attribute "aria-hidden" "true" ]
+                [ class "container"
+                , attribute "aria-hidden" "true"
+                ]
                 []
 
 
-formatDelta : DateTimeDelta -> ( Int, String )
-formatDelta delta =
-    if delta.days >= 1 then
-        ( delta.days, "日" )
-    else if delta.hours >= 1 then
-        ( delta.hours, "時間" )
-    else if delta.minutes >= 1 then
-        ( delta.minutes, "日" )
-    else
-        ( Basics.max delta.seconds 0, "秒" )
+formatDelta : DateTime -> DateTime -> ( Int, String )
+formatDelta from to =
+    case DateTime.compare from to of
+        GT ->
+            ( 0, "秒" )
+
+        _ ->
+            let
+                delta =
+                    DateTime.delta to from
+            in
+            if delta.days >= 1 then
+                ( delta.days + 1, "日" )
+            else if delta.hours >= 1 then
+                ( delta.hours + 1, "時間" )
+            else if delta.minutes >= 1 then
+                ( delta.minutes + 1, "分" )
+            else
+                ( delta.seconds + 1, "秒" )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    every (20 * millisecond) Tick
+    every (20 * millisecond) identity

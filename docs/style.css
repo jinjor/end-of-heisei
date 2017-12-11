@@ -7,6 +7,10 @@ body {
   font-family: calibri, helvetica, arial, sans-serif;
 }
 
+[aria-hidden="true"] {
+  opacity: 0;
+}
+
 .container {
   position: absolute;
   top: 0;
@@ -16,10 +20,6 @@ body {
   height: 20%;
   text-align: left;
   transition: ease 4s opacity;
-}
-
-.container[aria-hidden="true"] {
-  opacity: 0;
 }
 
 .head {
